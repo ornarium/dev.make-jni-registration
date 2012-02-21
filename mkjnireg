@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -6,6 +6,7 @@ use warnings;
 sub make_registration {
 	local $/ = undef;
 	my $file = $_[0];
+	my ( $dir, $file_name ) = m/(.*)[\\\/](.+)/ ? ( $1, $2 ) : ( undef, $_ );
 	open(my $FH, "<$file") || die "can not open $file";
 	my $class_method;
 	my $a = <$FH>;
@@ -26,7 +27,7 @@ sub make_registration {
 #TODO: 작업 필요
 		my $class_path = "";
 
-		open(my $DEF_FH, ">$class" . "_registration.h");
+		open(my $DEF_FH, ">$dir/$class" . "_registration.h");
 		for(@{$class_method->{$class}}){
 			my $method = $_->{method};
 			my $signature = $_->{signature};
@@ -62,5 +63,21 @@ sub make_registration {
 		close($DEF_FH);
 	}
 }
+use Cwd 'abs_path';
+my $path = abs_path($ARGV[0]);
+if($path ne "") {
+for(glob($path . "/*.h")) {
+  print $_ . "\n";
+  make_registration($_);
+}
+} else {
+  print "path is none";
+}
 
-make_registration("aaa.txt");
+
+
+
+
+
+
+
